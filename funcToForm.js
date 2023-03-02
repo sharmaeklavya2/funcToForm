@@ -48,7 +48,7 @@ function toFloat(s) {
         return n / d;
     }
     else {
-        toFloatSingle(s);
+        return toFloatSingle(s);
     }
 }
 
@@ -82,6 +82,20 @@ class TextWidget {
         this.type = type;
     }
 
+    read(key, value) {
+        if(value) {
+            return ((this.converter === null) ? value : this.converter(value));
+        }
+        else {
+            if(this.required) {
+                throw new InputError('emtpy value for ' + key);
+            }
+            else {
+                return this.defVal;
+            }
+        }
+    }
+
     create(idPrefix, name, description) {
         const wrapperElem = document.createElement('div');
         wrapperElem.setAttribute('id', idPrefix + '.wrap');
@@ -107,6 +121,10 @@ class TextWidget {
 }
 
 class CheckBoxWidget {
+    read(key, value) {
+        return Boolean(value);
+    }
+
     create(idPrefix, name, description) {
         const wrapperElem = document.createElement('div');
         wrapperElem.setAttribute('id', idPrefix + '.wrap');
@@ -173,25 +191,59 @@ class ParamGroup {
     }
 }
 
-function createFormItem(outerElem, param, prefix) {
+function createFormItem(outerElem, param, path) {
     if(param instanceof ParamGroup) {
-        throw new Error('ParamGroup not implemented.')
+        throw new Error('createFormItem: ParamGroup not implemented.')
     }
     else {
-        const idPrefix = prefix.join('.') + '.' + param.name;
+        const idPrefix = path.join('.') + '.' + param.name;
         let elem = param.widget.create(idPrefix, param.name, param.description);
         outerElem.appendChild(elem);
     }
 }
 
-function createForm(wrapperId, paramGroup) {
+function createForm(wrapperId, paramGroup, func) {
     const wrapperElem = document.getElementById(wrapperId);
     const formElem = document.createElement('form');
+    const formName = `f2f.${paramGroup.name}`;
     formElem.setAttribute('action', 'javascript:void(0);');
-    formElem.setAttribute('id', `f2f.${paramGroup.name}.form`);
-    let path = [`f2f.${paramGroup.name}`];
+    formElem.setAttribute('id', `${formName}.form`);
+    let path = [formName];
     for(const param of paramGroup.paramList) {
         createFormItem(formElem, param, path);
     }
+    const submitButton = document.createElement('button');
+    submitButton.setAttribute('type', 'submit');
+    submitButton.innerHTML = 'Run';
+    formElem.appendChild(submitButton);
+    formElem.addEventListener('submit', function(ev) {
+        let formData = new FormData(formElem);
+        let input = readForm(paramGroup, formData);
+        console.log('input:');
+        console.log(input);
+        let output = func(input);
+        console.log('output:');
+        console.log(output);
+    });
     wrapperElem.appendChild(formElem);
+}
+
+function readFormItem(formData, output, param, path) {
+    if(param instanceof ParamGroup) {
+        throw new Error('readFormItem: ParamGroup not implemented.')
+    }
+    else {
+        const key = path.join('.') + '.' + param.name;
+        const value = formData.get(key);
+        output[param.name] = param.widget.read(key, value);
+    }
+}
+
+function readForm(paramGroup, formData) {
+    let path = [`f2f.${paramGroup.name}`];
+    let output = {};
+    for(const param of paramGroup.paramList) {
+        readFormItem(formData, output, param, path);
+    }
+    return output;
 }

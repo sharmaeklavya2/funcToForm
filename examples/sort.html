@@ -8,11 +8,21 @@
 <link rel="stylesheet" href="../style.css" />
 <script type="text/javascript" src="../funcToForm.js"></script>
 <script>
-window.addEventListener('load', function() {
-    const paramA = new Param('a', new TextWidget(), 'Comma-separated list of numbers to sort');
-    const paramR = new Param('reversed', new CheckBoxWidget(), 'Should the list be sorted in descending order?');
-    const paramGroup = new ParamGroup('myApp', [paramA, paramR]);
-    createForm('myApp', paramGroup);
+function mySort(input) {
+    if(input.reversed) {
+        return input.a.sort(function(a, b) {return b-a;});
+    }
+    else {
+        return input.a.sort(function(a, b) {return a-b;});
+    }
+}
+window.addEventListener('DOMContentLoaded', function() {
+    const paramA = new Param('a', new TextWidget(listConv(',', toFloat)),
+        'Comma-separated list of numbers to sort');
+    const paramR = new Param('reversed', new CheckBoxWidget(),
+        'Should the list be sorted in descending order?');
+    const paramGroup = new ParamGroup('myForm', [paramA, paramR]);
+    createForm('myApp', paramGroup, mySort);
 });
 </script>
 </head>
