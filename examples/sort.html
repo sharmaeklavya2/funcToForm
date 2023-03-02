@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark light" />
+<title>Sorting</title>
+<link rel="stylesheet" href="../style.css" />
+<script type="text/javascript" src="../funcToForm.js"></script>
+<script>
+window.addEventListener('load', function() {
+    const paramA = new Param('a', new TextWidget(), 'Comma-separated list of numbers to sort');
+    const paramR = new Param('reversed', new CheckBoxWidget(), 'Should the list be sorted in descending order?');
+    const paramGroup = new ParamGroup('myApp', [paramA, paramR]);
+    createForm('myApp', paramGroup);
+});
+</script>
+</head>
+
+<body>
+<h1>Sorting</h1>
+<p>Sort a list of integers.</p>
+<div id="myApp"></div>
+</body>
+</html>
