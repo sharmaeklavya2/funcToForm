@@ -119,6 +119,10 @@ class TextWidget {
             inputElem.setAttribute('placeholder', this.defVal);
         }
         wrapperElem.appendChild(inputElem);
+        const errorsElem = document.createElement('div');
+        errorsElem.setAttribute('id', idPrefix + '.errors');
+        errorsElem.classList.add('f2f-errors');
+        wrapperElem.appendChild(errorsElem);
         return wrapperElem;
     }
 }
@@ -260,18 +264,32 @@ function createForm(wrapperId, paramGroup, func) {
     submitButton.setAttribute('type', 'submit');
     submitButton.innerHTML = 'Run';
     formElem.appendChild(submitButton);
+    const formErrorElem = document.createElement('div');
+    formErrorElem.classList.add('f2f-error');
+    formErrorElem.setAttribute('id', `${formName}.error`);
     wrapperElem.appendChild(formElem);
+    wrapperElem.appendChild(formErrorElem);
     const stdout = new Ostream('stdout', wrapperElem);
     formElem.addEventListener('submit', function(ev) {
-        let formData = new FormData(formElem);
-        let input = readForm(paramGroup, formData);
+        const formData = new FormData(formElem);
+        const [input, status] = readForm(paramGroup, formData);
         debugInfo.input = input;
-        let output = func(input, stdout);
-        debugInfo.output = output;
-        if(output !== undefined) {
-            stdout.log(output);
+        if(status) {
+            try {
+                const output = func(input, stdout);
+                debugInfo.output = output;
+                if(output !== undefined) {
+                    stdout.log(output);
+                }
+            }
+            catch (error) {
+                formErrorElem.innerHTML = error.toString();
+                throw error;
+            }
+            finally {
+                stdout.addBreak();
+            }
         }
-        stdout.addBreak();
     });
 }
 
@@ -282,15 +300,38 @@ function readFormItem(formData, output, param, path) {
     else {
         const key = path.join('.') + '.' + param.name;
         const value = formData.get(key);
-        output[param.name] = param.widget.read(key, value);
+        const errorsElem = document.getElementById(key + '.errors');
+        if(errorsElem) {
+            errorsElem.innerHTML = '';
+        }
+        try {
+            output[param.name] = param.widget.read(key, value);
+            return true;
+        }
+        catch (error) {
+            if(error instanceof InputError && errorsElem) {
+                const errorElem = document.createElement('div');
+                errorElem.classList.add('f2f-error');
+                errorElem.innerHTML = error.message;
+                errorsElem.appendChild(errorElem);
+                return false;
+            }
+            else {
+                throw error;
+            }
+        }
     }
 }
 
 function readForm(paramGroup, formData) {
     let path = [`f2f.${paramGroup.name}`];
     let output = {};
+    let globalOk = true;
     for(const param of paramGroup.paramList) {
-        readFormItem(formData, output, param, path);
+        const localOk = readFormItem(formData, output, param, path);
+        if(!localOk) {
+            globalOk = false;
+        }
     }
-    return output;
+    return [output, globalOk];
 }
