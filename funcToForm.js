@@ -220,26 +220,30 @@ function createFormItem(outerElem, param, path) {
     }
     else {
         const idPrefix = path.join('.') + '.' + param.name;
-        const wrapperElem = document.createElement('div');
-        wrapperElem.setAttribute('id', idPrefix + '.wrap');
-        wrapperElem.classList.add('inputWrap');
+        const owrapperElem = document.createElement('div');
+        owrapperElem.setAttribute('id', idPrefix + '.owrap');
+        owrapperElem.classList.add('inputOwrap');
+        const iwrapperElem = document.createElement('div');
+        iwrapperElem.classList.add('inputIwrap');
+        iwrapperElem.setAttribute('id', idPrefix + '.iwrap');
+        owrapperElem.appendChild(iwrapperElem);
         const labelElem = document.createElement('label');
         labelElem.setAttribute('for', idPrefix + '.input');
         labelElem.innerHTML = param.name;
         const inputElem = param.widget.create(idPrefix);
         if(param.widget instanceof CheckBoxWidget) {
-            wrapperElem.appendChild(inputElem);
-            wrapperElem.appendChild(labelElem);
+            iwrapperElem.appendChild(inputElem);
+            iwrapperElem.appendChild(labelElem);
         }
         else {
-            wrapperElem.appendChild(labelElem);
-            wrapperElem.appendChild(inputElem);
+            iwrapperElem.appendChild(labelElem);
+            iwrapperElem.appendChild(inputElem);
             const errorsElem = document.createElement('div');
             errorsElem.setAttribute('id', idPrefix + '.errors');
             errorsElem.classList.add('f2f-errors');
-            wrapperElem.appendChild(errorsElem);
+            owrapperElem.appendChild(errorsElem);
         }
-        outerElem.appendChild(wrapperElem);
+        outerElem.appendChild(owrapperElem);
     }
 }
 
