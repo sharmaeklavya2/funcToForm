@@ -99,14 +99,7 @@ class TextWidget {
         }
     }
 
-    create(idPrefix, name, description) {
-        const wrapperElem = document.createElement('div');
-        wrapperElem.setAttribute('id', idPrefix + '.wrap');
-        wrapperElem.classList.add('inputWrap');
-        const labelElem = document.createElement('label');
-        labelElem.setAttribute('for', idPrefix + '.input');
-        labelElem.innerHTML = name;
-        wrapperElem.appendChild(labelElem);
+    create(idPrefix) {
         const inputElem = document.createElement('input');
         inputElem.setAttribute('id', idPrefix + '.input');
         inputElem.setAttribute('type', this.type);
@@ -118,12 +111,7 @@ class TextWidget {
         if(this.defVal) {
             inputElem.setAttribute('placeholder', this.defVal);
         }
-        wrapperElem.appendChild(inputElem);
-        const errorsElem = document.createElement('div');
-        errorsElem.setAttribute('id', idPrefix + '.errors');
-        errorsElem.classList.add('f2f-errors');
-        wrapperElem.appendChild(errorsElem);
-        return wrapperElem;
+        return inputElem;
     }
 }
 
@@ -133,33 +121,54 @@ class CheckBoxWidget {
     }
 
     create(idPrefix, name, description) {
-        const wrapperElem = document.createElement('div');
-        wrapperElem.setAttribute('id', idPrefix + '.wrap');
-        wrapperElem.classList.add('inputWrap');
         const inputElem = document.createElement('input');
         inputElem.setAttribute('id', idPrefix + '.input');
         inputElem.setAttribute('type', 'checkbox');
         inputElem.setAttribute('name', idPrefix);
-        wrapperElem.appendChild(inputElem);
-        const labelElem = document.createElement('label');
-        labelElem.setAttribute('for', idPrefix + '.input');
-        labelElem.innerHTML = name;
-        wrapperElem.appendChild(labelElem);
-        return wrapperElem;
+        return inputElem;
     }
 }
 
 class SelectOption {
-    constructor(name, value, text=null) {
-        this.name = name;
-        this.value = value;
-        this.text = ((text === null) ? name : text);
+    constructor(name, value=null, text=null) {
+        this.name = name;  // name used by browser when submitting form
+        this.value = ((value === null) ? name : value);  // value passed to our function
+        this.text = ((text === null) ? name : text);  // text displayed in UI
     }
 }
 
 class SelectWidget {
-    constructor(options) {
+    constructor(options, defName=null) {
         this.options = options;
+        this.defName = defName;
+        this.nameToValue = new Map();
+        for(const option of options) {
+            if(this.nameToValue.has(option.name)) {
+                throw new Error('Select option ' + option.name + ' already used');
+            }
+            this.nameToValue.set(option.name, option.value);
+        }
+    }
+
+    create(idPrefix, name, description) {
+        const inputElem = document.createElement('select');
+        inputElem.setAttribute('id', idPrefix + '.input');
+        inputElem.setAttribute('name', idPrefix);
+        inputElem.setAttribute('required', 'required');
+        for(const option of this.options) {
+            const optionElem = document.createElement('option');
+            optionElem.setAttribute('value', option.name);
+            if(option.name === this.defName) {
+                optionElem.setAttribute('selected', 'selected');
+            }
+            optionElem.innerHTML = option.text;
+            inputElem.appendChild(optionElem);
+        }
+        return inputElem;
+    }
+
+    read(key, value) {
+        return this.nameToValue.get(value);
     }
 }
 
@@ -204,8 +213,26 @@ function createFormItem(outerElem, param, path) {
     }
     else {
         const idPrefix = path.join('.') + '.' + param.name;
-        let elem = param.widget.create(idPrefix, param.name, param.description);
-        outerElem.appendChild(elem);
+        const wrapperElem = document.createElement('div');
+        wrapperElem.setAttribute('id', idPrefix + '.wrap');
+        wrapperElem.classList.add('inputWrap');
+        const labelElem = document.createElement('label');
+        labelElem.setAttribute('for', idPrefix + '.input');
+        labelElem.innerHTML = param.name;
+        const inputElem = param.widget.create(idPrefix);
+        if(param.widget instanceof CheckBoxWidget) {
+            wrapperElem.appendChild(inputElem);
+            wrapperElem.appendChild(labelElem);
+        }
+        else {
+            wrapperElem.appendChild(labelElem);
+            wrapperElem.appendChild(inputElem);
+            const errorsElem = document.createElement('div');
+            errorsElem.setAttribute('id', idPrefix + '.errors');
+            errorsElem.classList.add('f2f-errors');
+            wrapperElem.appendChild(errorsElem);
+        }
+        outerElem.appendChild(wrapperElem);
     }
 }
 

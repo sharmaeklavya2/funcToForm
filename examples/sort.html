@@ -9,19 +9,31 @@
 <script type="text/javascript" src="../funcToForm.js"></script>
 <script>
 function mySort(input) {
-    if(input.reversed) {
-        return input.a.sort(function(a, b) {return b-a;});
+    if(input.criterion === 'lex') {
+        input.a.sort();
+    }
+    else if(input.criterion === 'num') {
+        input.a.sort(function(a, b) {return a-b;});
     }
     else {
-        return input.a.sort(function(a, b) {return a-b;});
+        throw new Error('invalid sort criterion' + input.criterion);
     }
+    if(input.reverse) {
+        input.a.reverse();
+    }
+    return input.a;
 }
 window.addEventListener('DOMContentLoaded', function() {
     const paramA = new Param('a', new TextWidget(listConv(',', toFloat)),
         'Comma-separated list of numbers to sort');
-    const paramR = new Param('reversed', new CheckBoxWidget(),
+    const paramR = new Param('reverse', new CheckBoxWidget(),
         'Should the list be sorted in descending order?');
-    const paramGroup = new ParamGroup('myForm', [paramA, paramR]);
+    const sortMethods = [
+        new SelectOption('lexicographic', 'lex', 'Lexicographic'),
+        new SelectOption('numeric', 'num', 'Numeric')
+    ];
+    const paramM = new Param('criterion', new SelectWidget(sortMethods, 'numeric'));
+    const paramGroup = new ParamGroup('myForm', [paramA, paramM, paramR]);
     createForm('myApp', paramGroup, mySort);
 });
 </script>
