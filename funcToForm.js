@@ -78,9 +78,16 @@ function listConv(sep, converter=null) {
 //=[ Widgets and Params ]=======================================================
 
 class TextWidget {
-    constructor(converter=null, required=true, defVal=null, type='text') {
+    constructor(converter=null, required=true, defVal=null, defStr=null, type='text') {
         this.converter = converter;
         this.defVal = defVal;
+        if(defStr === null && (typeof defVal === 'string' || defVal instanceof String)) {
+            this.defStr = defVal;
+        }
+        else {
+            this.defStr = defStr || '';
+        }
+        this.defStr = defStr;
         this.required = (defVal ? false : required);
         this.type = type;
     }
@@ -109,7 +116,7 @@ class TextWidget {
             inputElem.setAttribute('required', 'required');
         }
         if(this.defVal) {
-            inputElem.setAttribute('placeholder', this.defVal);
+            inputElem.setAttribute('placeholder', this.defStr);
         }
         return inputElem;
     }
