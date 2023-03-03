@@ -8,6 +8,9 @@ function compose(f, g) {
     }
 }
 
+var debugInfo = {'input': null, 'output': null};
+var laneNameToType = {'log': 'div', 'break': 'div'};
+
 //=[ Converters and Validators ]================================================
 
 class InputError extends Error {
@@ -202,6 +205,47 @@ function createFormItem(outerElem, param, path) {
     }
 }
 
+class Ostream {
+    constructor(name, wrapperElem) {
+        this.name = name;
+        this.wrapperElem = wrapperElem;
+        this.streamElem = document.createElement('div');
+        this.streamElem.setAttribute('id', `f2f.${name}`);
+        this.streamElem.classList.add('f2f-ostream');
+        wrapperElem.appendChild(this.streamElem);
+        this.laneName = null;
+        this.laneElem = null;
+    }
+
+    setLane(name) {
+        if(name === this.laneName) {
+            return;
+        }
+        const laneType = laneNameToType[name];
+        if(laneType) {
+            this.laneName = name;
+            this.laneElem = document.createElement(laneType);
+            this.laneElem.classList.add('f2f-lane-' + name);
+            this.streamElem.appendChild(this.laneElem);
+        }
+        else {
+            throw new Error('invalid lane name ' + name);
+        }
+    }
+
+    log(msg) {
+        this.setLane('log');
+        const logLineElem = document.createElement('div');
+        logLineElem.classList.add('f2f-log-line');
+        logLineElem.innerHTML = '' + msg;
+        this.laneElem.appendChild(logLineElem);
+    }
+
+    addBreak() {
+        this.setLane('break');
+    }
+}
+
 function createForm(wrapperId, paramGroup, func) {
     const wrapperElem = document.getElementById(wrapperId);
     const formElem = document.createElement('form');
@@ -216,16 +260,19 @@ function createForm(wrapperId, paramGroup, func) {
     submitButton.setAttribute('type', 'submit');
     submitButton.innerHTML = 'Run';
     formElem.appendChild(submitButton);
+    wrapperElem.appendChild(formElem);
+    const stdout = new Ostream('stdout', wrapperElem);
     formElem.addEventListener('submit', function(ev) {
         let formData = new FormData(formElem);
         let input = readForm(paramGroup, formData);
-        console.log('input:');
-        console.log(input);
-        let output = func(input);
-        console.log('output:');
-        console.log(output);
+        debugInfo.input = input;
+        let output = func(input, stdout);
+        debugInfo.output = output;
+        if(output !== undefined) {
+            stdout.log(output);
+        }
+        stdout.addBreak();
     });
-    wrapperElem.appendChild(formElem);
 }
 
 function readFormItem(formData, output, param, path) {
