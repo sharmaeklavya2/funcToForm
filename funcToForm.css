@@ -1,22 +1,24 @@
 /* colors */
 body {
+    --bg-color: white;
     --text-color: #202020;
     --emph-color: #101010;
     --link-color: #1a0dab;
     --vlink-color: #681da8;
+    --text-secondary: #888;
     --text-danger: #dc3545;
     --text-warning: #ffc107;
     --text-success: #198754;
     --text-blue: #0d6efd;
-    --text-secondary: #888;
+
     --very-light-tint: rgba(0, 0, 0, 0.02);
     --light-tint: rgba(0, 0, 0, 0.05);
     --medium-tint: rgba(0, 0, 0, 0.1);
     --heavy-tint: rgba(0, 0, 0, 0.2);
+    --danger-tint: rgba(255, 0, 0, 0.1);
 }
 @media (prefers-color-scheme: dark) {
     body {
-        background: #1b1e20;
         --text-color: #c8c8c8;
         --emph-color: #e4e4e4;
         --link-color: #8ab4f8;
@@ -25,6 +27,8 @@ body {
         --text-warning: #f39c12;
         --text-success: #00bc8c;
         --text-blue: #3498db;
+
+        --bg-color: #1b1e20;
         --very-light-tint: rgba(255, 255, 255, 0.02);
         --light-tint: rgba(255, 255, 255, 0.05);
         --medium-tint: rgba(255, 255, 255, 0.1);
@@ -39,19 +43,19 @@ body {
     ol {padding-left: 1.2em;}
 }
 @media (min-width: 821px) {
-    body {margin: 2em;}
+    body {margin: 1em 2em;}
 }
 
 /* generic */
-a {color: var(--link-color);}
-a:visited {color: var(--vlink-color);}
-
 body {
     font-family: BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Open Sans", "Helvetica Neue", sans-serif;
     color: var(--text-color);
+    background-color: var(--bg-color);
     line-height: 1.4;
     font-size: 1.1em;
 }
+a {color: var(--link-color);}
+a:visited {color: var(--vlink-color);}
 a:not(:hover) {
     text-decoration: none;
 }
@@ -59,12 +63,6 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     line-height: initial;
     color: var(--emph-color);
-}
-.danger {
-    color: var(--text-danger);
-}
-.success {
-    color: var(--text-success);
 }
 strong, em {
     color: var(--emph-color);
@@ -79,4 +77,137 @@ td, th {
 div.math, .katex-display {
     overflow-x: auto;
     overflow-y: hidden;
+}
+
+.danger {
+    color: var(--text-danger);
+}
+.success {
+    color: var(--text-success);
+}
+
+/* form */
+form, .inputOwrap {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    font-family: monospace;
+}
+form {
+    background-color: var(--light-tint);
+    padding: 1em;
+    align-items: stretch;
+    border-radius: 0.5em;
+    margin-bottom: 1em;
+}
+.inputIwrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    align-self: stretch;
+    margin: 0.2em 0;
+}
+.f2f-errors {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding-left: 1em;
+}
+.f2f-error:not(:empty) {
+    margin: 0.2em 0;
+    padding: 0.2em 0.3em;
+    background-color: var(--danger-tint);
+    color: var(--text-danger);
+    white-space: pre-wrap;
+    border-radius: 0.25em;
+}
+.inputIwrap > input:not([type="checkbox"]), .inputIwrap > select {
+    margin-left: 1em;
+}
+.inputIwrap > input:not([type="checkbox"]), .inputIwrap > textarea {
+    flex: 1;
+}
+.inputIwrap > input[type="checkbox"] {
+    margin-right: 1em;
+    align-self: stretch;
+}
+input[type="text"], select {
+    border: none;
+    border-radius: 0.25em;
+    font-size: 1em;
+    font-family: monospace;
+    color: var(--text-color);
+}
+input::placeholder {
+    color: var(--text-secondary);
+}
+input, select, textarea {
+    background-color: var(--bg-color);
+}
+input[type="text"] {
+    padding: 0.35em 0.7em;
+}
+select {
+    padding: 0.3em 0.6em;
+}
+button[type="submit"] {
+    margin-top: 0.25em;
+    align-self: center;
+    padding: 0.2em 1em;
+    font-size: 1em;
+}
+.hidden {
+    display: none;
+}
+.f2f-help-btn {
+    color: var(--text-secondary);
+    border: 1px solid var(--text-secondary);
+    margin-left: 0.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1em;
+    width: 10px;
+    height: 10px;
+}
+.f2f-help-btn:hover {
+    background-color: var(--medium-tint);
+}
+.f2f-help-btn:active {
+    background-color: var(--heavy-tint);
+}
+.f2f-help-btn::after {
+    content: "?";
+}
+.f2f-help-str {
+    padding: 0.2em 0.3em;
+    margin-left: 1em;
+    border-radius: 0.25em;
+    background-color: var(--very-light-tint);
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+}
+
+/* output */
+.f2f-ostream, .f2f-lane-log {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+.f2f-lane-log {
+    padding: 1em;
+    background-color: var(--very-light-tint);
+    font-family: monospace;
+}
+.f2f-lane-break:not(:last-child) {
+    border-top: 1px solid var(--medium-tint);
+}
+.f2f-log-line.danger {
+    background-color: var(--danger-tint);
+    color: var(--text-danger);
+    white-space: pre-wrap;
+}
+.f2f-log-line.warning {
+    background-color: var(--danger-tint);
+    color: var(--text-danger);
 }
