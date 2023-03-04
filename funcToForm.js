@@ -300,7 +300,8 @@ class Ostream {
         this.setLane('log');
         const logLineElem = document.createElement('div');
         logLineElem.classList.add('f2f-log-line');
-        logLineElem.innerHTML = '' + msg;
+        const strArgs = Array.from(arguments).map(x => '' + x);
+        logLineElem.innerHTML = strArgs.join(' ');
         this.laneElem.appendChild(logLineElem);
     }
 
