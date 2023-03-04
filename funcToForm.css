@@ -11,10 +11,11 @@ body {
     --text-success: #198754;
     --text-blue: #0d6efd;
 
-    --very-light-tint: rgba(0, 0, 0, 0.02);
+    --vlight-tint: rgba(0, 0, 0, 0.02);
     --light-tint: rgba(0, 0, 0, 0.05);
     --medium-tint: rgba(0, 0, 0, 0.1);
     --heavy-tint: rgba(0, 0, 0, 0.2);
+    --vheavy-tint: rgba(0, 0, 0, 0.3);
     --danger-tint: rgba(255, 0, 0, 0.1);
 }
 @media (prefers-color-scheme: dark) {
@@ -33,6 +34,7 @@ body {
         --light-tint: rgba(255, 255, 255, 0.05);
         --medium-tint: rgba(255, 255, 255, 0.1);
         --heavy-tint: rgba(255, 255, 255, 0.2);
+        --vheavy-tint: rgba(255, 255, 255, 0.3);
     }
 }
 
@@ -153,8 +155,21 @@ select {
 button[type="submit"] {
     margin-top: 0.25em;
     align-self: center;
-    padding: 0.2em 1em;
+    padding: 0.25em 1em;
     font-size: 1em;
+}
+button {
+    background-color: var(--medium-tint);
+    color: var(--text-color);
+    border-radius: 0.3em;
+    border: none;
+    cursor: pointer;
+}
+button:hover {
+    background-color: var(--heavy-tint);
+}
+button:active {
+    background-color: var(--vheavy-tint);
 }
 .hidden {
     display: none;
@@ -167,8 +182,9 @@ button[type="submit"] {
     justify-content: center;
     align-items: center;
     border-radius: 1em;
-    width: 10px;
-    height: 10px;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
 }
 .f2f-help-btn:hover {
     background-color: var(--medium-tint);
@@ -183,7 +199,7 @@ button[type="submit"] {
     padding: 0.2em 0.3em;
     margin-left: 1em;
     border-radius: 0.25em;
-    background-color: var(--very-light-tint);
+    background-color: var(--vlight-tint);
     color: var(--text-secondary);
     white-space: pre-wrap;
 }
@@ -196,7 +212,7 @@ button[type="submit"] {
 }
 .f2f-lane-log {
     padding: 1em;
-    background-color: var(--very-light-tint);
+    background-color: var(--vlight-tint);
     font-family: monospace;
 }
 .f2f-lane-break:not(:last-child) {
