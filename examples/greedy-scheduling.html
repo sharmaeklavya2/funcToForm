@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark light" />
+<title>Greedy Scheduling</title>
+<link rel="stylesheet" href="../funcToForm.css" />
+<script type="text/javascript" src="../funcToForm.js"></script>
+<script>
+'use strict';
+function greedySched(a, m, sort) {
+    const n = a.length;
+    // get sequence of indices of jobs corresponding to iteration order
+    let jobIndices = [];
+    if(sort) {
+        let aj = []
+        for(let j=0; j<n; ++j) {
+            aj.push([a[j], j]);
+        }
+        aj.sort((a, b) => b[0]-a[0]);
+        for(let j=0; j<n; ++j) {
+            jobIndices.push(aj[j][1]);
+        }
+    }
+    else {
+        for(let j=0; j<n; ++j) {
+            jobIndices.push(j);
+        }
+    }
+    // initialize
+    const assn = Array(n).fill(null);  // job i is assigned to assn[i]
+    const bundles = [], loads = [];
+    for(let i=0; i<m; ++i) {
+        bundles.push([]);
+        loads.push(0);
+    }
+    // schedule
+    for(const j of jobIndices) {
+        // find min-loaded machine
+        let iMin = 0;
+        for(let i=1; i<m; ++i) {
+            if(loads[i] < loads[iMin]) {
+                iMin = i;
+            }
+        }
+        // assign job j to min-loaded machine
+        assn[j] = iMin;
+        bundles[iMin].push(j);
+        loads[iMin] += a[j];
+    }
+    return [assn, bundles, loads];
+}
+function greedyWrapper(input, stdout) {
+    const n = input.a.length, m = input.m, a = input.a;
+    const [assn, bundles, loads] = greedySched(a, m, input.sort);
+    let loadBundles = [];
+    let totalLoad = 0;
+    for(let i=0; i<m; ++i) {
+        totalLoad += loads[i];
+        loadBundles.push([]);
+        for(const j of bundles[i]) {
+            loadBundles[i].push(a[j]);
+        }
+    }
+    stdout.log('avg load:', totalLoad / m);
+    stdout.log('assn:', JSON.stringify(assn));
+    stdout.log('loads:', JSON.stringify(loads));
+    stdout.log('bundles:', JSON.stringify(bundles));
+    stdout.log('sizes of jobs in each bundle:', JSON.stringify(loadBundles));
+}
+window.addEventListener('DOMContentLoaded', function() {
+    const paramGroup = new ParamGroup('myForm', [
+        new Param('a', new TextWidget(listConv(',', toFloat)),
+            'job sizes', 'Running times of jobs as a comma-separated list of numbers'),
+        new Param('m', new TextWidget(compose(assertGE(1), toInt)), null,
+            'Number of machines'),
+        new Param('sort', new CheckBoxWidget(true), null, 'Sort the jobs in descending order?'),
+    ]);
+    createForm('myApp', paramGroup, greedyWrapper);
+});
+</script>
+</head>
+
+<body>
+<h1>Greedy Scheduling</h1>
+<p>Schedule jobs onto m machines using the
+<a href="https://en.wikipedia.org/wiki/List_scheduling">greedy algorithm</a>.</p>
+<div id="myApp"></div>
+</body>
+</html>
