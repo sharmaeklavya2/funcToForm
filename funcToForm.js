@@ -340,7 +340,7 @@ class Ostream {
     }
 }
 
-function createForm(wrapperId, paramGroup, func) {
+function createForm(wrapperId, paramGroup, func, clearOutput=true) {
     const wrapperElem = document.getElementById(wrapperId);
     const formElem = document.createElement('form');
     const formName = `f2f.${paramGroup.name}`;
@@ -367,6 +367,9 @@ function createForm(wrapperId, paramGroup, func) {
         debugInfo.input = input;
         if(status) {
             try {
+                if(clearOutput) {
+                    stdout.clear();
+                }
                 const output = func(input, stdout);
                 debugInfo.output = output;
                 if(output !== undefined) {

@@ -34,7 +34,7 @@ window.addEventListener('DOMContentLoaded', function() {
     ];
     const paramM = new Param('criterion', new SelectWidget(sortMethods, 'num'));
     const paramGroup = new ParamGroup('myForm', [paramA, paramM, paramR]);
-    createForm('myApp', paramGroup, mySort);
+    createForm('myApp', paramGroup, mySort, false);
 });
 </script>
 </head>
