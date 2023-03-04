@@ -123,6 +123,10 @@ class TextWidget {
 }
 
 class CheckBoxWidget {
+    constructor(defVal=false) {
+        this.defVal = defVal;
+    }
+
     read(key, value) {
         return Boolean(value);
     }
@@ -132,6 +136,9 @@ class CheckBoxWidget {
         inputElem.setAttribute('id', idPrefix + '.input');
         inputElem.setAttribute('type', 'checkbox');
         inputElem.setAttribute('name', idPrefix);
+        if(this.defVal) {
+            inputElem.setAttribute('checked', 'checked');
+        }
         return inputElem;
     }
 }
