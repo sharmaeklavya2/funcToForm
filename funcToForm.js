@@ -60,6 +60,7 @@ function assertGE(thresh) {
         if(x < thresh) {
             throw new InputError(x + ' should be ≥ ' + thresh);
         }
+        return x;
     }
 }
 
