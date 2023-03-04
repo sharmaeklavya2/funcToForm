@@ -29,10 +29,10 @@ window.addEventListener('DOMContentLoaded', function() {
     const paramR = new Param('reverse', new CheckBoxWidget(),
         null, 'Should the list be sorted in descending order?');
     const sortMethods = [
-        new SelectOption('lexicographic', 'lex', 'Lexicographic'),
-        new SelectOption('numeric', 'num', 'Numeric')
+        new SelectOption('lex', 'lex', 'Lexicographic'),
+        new SelectOption('num', 'num', 'Numeric')
     ];
-    const paramM = new Param('criterion', new SelectWidget(sortMethods, 'numeric'));
+    const paramM = new Param('criterion', new SelectWidget(sortMethods, 'num'));
     const paramGroup = new ParamGroup('myForm', [paramA, paramM, paramR]);
     createForm('myApp', paramGroup, mySort);
 });
@@ -41,7 +41,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 <body>
 <h1>Sorting</h1>
-<p>Sort a list of integers.</p>
+<p>Sort a list of numbers.</p>
 <div id="myApp"></div>
 </body>
 </html>
