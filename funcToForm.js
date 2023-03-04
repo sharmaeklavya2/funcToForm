@@ -8,8 +8,9 @@ function compose(f, g) {
     }
 }
 
+var svgNS = 'http://www.w3.org/2000/svg';
 var debugInfo = {'input': null, 'output': null};
-var laneNameToType = {'log': 'div', 'break': 'div'};
+var laneNameToType = {'log': 'div', 'break': 'div', 'svg': 'svg'};
 
 //=[ Converters and Validators ]================================================
 
@@ -289,15 +290,25 @@ class Ostream {
         this.laneElem = null;
     }
 
-    setLane(name) {
+    setLane(name, attrs=null) {
         if(name === this.laneName) {
             return;
         }
         const laneType = laneNameToType[name];
         if(laneType) {
             this.laneName = name;
-            this.laneElem = document.createElement(laneType);
+            if(name === 'svg') {
+                this.laneElem = document.createElementNS(svgNS, 'svg');
+            }
+            else {
+                this.laneElem = document.createElement(laneType);
+            }
             this.laneElem.classList.add('f2f-lane-' + name);
+            if(attrs !== null) {
+                for(const [attr, value] of Object.entries(attrs)) {
+                    this.laneElem.setAttribute(attr, value);
+                }
+            }
             this.streamElem.appendChild(this.laneElem);
         }
         else {
@@ -316,6 +327,10 @@ class Ostream {
 
     addBreak() {
         this.setLane('break');
+    }
+
+    rawAdd(elem) {
+        this.laneElem.appendChild(elem);
     }
 
     clear() {

@@ -229,3 +229,6 @@ button:active {
     background-color: var(--danger-tint);
     color: var(--text-danger);
 }
+.f2f-ostream > svg {
+    margin: 1em;
+}
