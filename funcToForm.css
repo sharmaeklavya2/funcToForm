@@ -218,10 +218,12 @@ button:active {
 .f2f-lane-break:not(:last-child) {
     border-top: 1px solid var(--medium-tint);
 }
+.f2f-log-line {
+    white-space: pre-wrap;
+}
 .f2f-log-line.danger {
     background-color: var(--danger-tint);
     color: var(--text-danger);
-    white-space: pre-wrap;
 }
 .f2f-log-line.warning {
     background-color: var(--danger-tint);
