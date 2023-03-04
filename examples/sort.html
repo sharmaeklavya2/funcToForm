@@ -25,9 +25,9 @@ function mySort(input) {
 }
 window.addEventListener('DOMContentLoaded', function() {
     const paramA = new Param('a', new TextWidget(listConv(',', toFloat),
-        true, [4, 2, 3], "4, 2, 3"), 'Comma-separated list of numbers to sort');
+        true, [4, 2, 3], "4, 2, 3"), 'list', 'Comma-separated list of numbers to sort');
     const paramR = new Param('reverse', new CheckBoxWidget(),
-        'Should the list be sorted in descending order?');
+        null, 'Should the list be sorted in descending order?');
     const sortMethods = [
         new SelectOption('lexicographic', 'lex', 'Lexicographic'),
         new SelectOption('numeric', 'num', 'Numeric')

@@ -185,8 +185,9 @@ function isValidParamName(s) {
 }
 
 class Param {
-    constructor(name, widget=null, description=null) {
+    constructor(name, widget=null, label=null, description=null) {
         this.name = name;
+        this.label = (label === null ? name : label);
         if(!isValidParamName(name)) {
             throw new Error('Invalid parameter name ' + name);
         }
@@ -229,7 +230,7 @@ function createFormItem(outerElem, param, path) {
         owrapperElem.appendChild(iwrapperElem);
         const labelElem = document.createElement('label');
         labelElem.setAttribute('for', idPrefix + '.input');
-        labelElem.innerHTML = param.name;
+        labelElem.innerHTML = param.label;
         let helpBtn = null;
         if(param.description) {
             helpBtn = document.createElement('div');
