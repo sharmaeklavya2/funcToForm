@@ -55,19 +55,41 @@ function greedyWrapper(input, stdout) {
     const n = input.a.length, m = input.m, a = input.a;
     const [assn, bundles, loads] = greedySched(a, m, input.sort);
     let loadBundles = [];
-    let totalLoad = 0;
+    let totalLoad = 0, maxLoad = 0, minLoad = Infinity;
     for(let i=0; i<m; ++i) {
         totalLoad += loads[i];
+        maxLoad = Math.max(loads[i], maxLoad);
+        minLoad = Math.min(loads[i], minLoad);
         loadBundles.push([]);
         for(const j of bundles[i]) {
             loadBundles[i].push(a[j]);
         }
     }
-    stdout.log('avg load:', totalLoad / m);
-    stdout.log('assn:', JSON.stringify(assn));
+    stdout.log(`avg load: ${totalLoad / m}, max load: ${maxLoad}, min load: ${minLoad}`);
     stdout.log('loads:', JSON.stringify(loads));
+    stdout.log('assn:', JSON.stringify(assn));
     stdout.log('bundles:', JSON.stringify(bundles));
     stdout.log('sizes of jobs in each bundle:', JSON.stringify(loadBundles));
+
+    const stroke=2, prec=5, totHeight=200, totWidth=240, margin = totWidth / (5*m - 1);
+    stdout.setLane('svg', {'width': totWidth + stroke * 2, 'height': totHeight + stroke * 2,
+        'viewBox': `${-stroke} ${-stroke} ${totWidth + stroke * 2} ${totHeight + stroke * 2}`});
+    const styleElem = document.createElementNS(svgNS, 'style');
+    styleElem.innerHTML = `rect {stroke: var(--text-secondary); stroke-width: ${stroke}px; fill: var(--light-tint);}`;
+    stdout.rawAdd(styleElem);
+    for(let i=0; i<m; ++i) {
+        let cumHeight = 0;
+        for(const j of bundles[i]) {
+            const height = totHeight * (a[j] / maxLoad);
+            cumHeight += height;
+            const rectElem = document.createElementNS(svgNS, 'rect');
+            rectElem.setAttribute('x', (margin * 5 * i).toFixed(prec));
+            rectElem.setAttribute('y', (totHeight - cumHeight).toFixed(prec));
+            rectElem.setAttribute('width', (margin * 4).toFixed(prec));
+            rectElem.setAttribute('height', height.toFixed(prec));
+            stdout.rawAdd(rectElem);
+        }
+    }
 }
 window.addEventListener('DOMContentLoaded', function() {
     const paramGroup = new ParamGroup('myForm', [
