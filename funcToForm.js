@@ -308,6 +308,12 @@ class Ostream {
     addBreak() {
         this.setLane('break');
     }
+
+    clear() {
+        this.laneName = null;
+        this.laneElem = null;
+        this.streamElem.innerHTML = '';
+    }
 }
 
 function createForm(wrapperId, paramGroup, func) {
@@ -330,6 +336,7 @@ function createForm(wrapperId, paramGroup, func) {
     wrapperElem.appendChild(formElem);
     wrapperElem.appendChild(formErrorElem);
     const stdout = new Ostream('stdout', wrapperElem);
+    debugInfo['stdout'] = stdout;
     formElem.addEventListener('submit', function(ev) {
         const formData = new FormData(formElem);
         const [input, status] = readForm(paramGroup, formData);
