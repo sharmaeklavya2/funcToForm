@@ -230,19 +230,40 @@ function createFormItem(outerElem, param, path) {
         const labelElem = document.createElement('label');
         labelElem.setAttribute('for', idPrefix + '.input');
         labelElem.innerHTML = param.name;
+        let helpBtn = null;
+        if(param.description) {
+            helpBtn = document.createElement('div');
+            helpBtn.classList.add('f2f-help-btn');
+        }
         const inputElem = param.widget.create(idPrefix);
         if(param.widget instanceof CheckBoxWidget) {
             iwrapperElem.appendChild(inputElem);
             iwrapperElem.appendChild(labelElem);
+            if(helpBtn !== null) {
+                iwrapperElem.appendChild(helpBtn);
+            }
         }
         else {
             iwrapperElem.appendChild(labelElem);
+            if(helpBtn !== null) {
+                iwrapperElem.appendChild(helpBtn);
+            }
             iwrapperElem.appendChild(inputElem);
-            const errorsElem = document.createElement('div');
-            errorsElem.setAttribute('id', idPrefix + '.errors');
-            errorsElem.classList.add('f2f-errors');
-            owrapperElem.appendChild(errorsElem);
         }
+        if(param.description) {
+            const helpElem = document.createElement('div');
+            helpElem.classList.add('f2f-help-str');
+            helpElem.classList.add('hidden');
+            helpElem.innerHTML = param.description;
+            owrapperElem.appendChild(helpElem);
+            helpBtn.addEventListener('click', function(ev) {
+                helpElem.classList.toggle('hidden');
+            });
+        }
+        const errorsElem = document.createElement('div');
+        errorsElem.setAttribute('id', idPrefix + '.errors');
+        errorsElem.classList.add('f2f-errors');
+        owrapperElem.appendChild(errorsElem);
         outerElem.appendChild(owrapperElem);
     }
 }
