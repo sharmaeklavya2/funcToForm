@@ -30,7 +30,7 @@ body {
         --text-blue: #3498db;
 
         --bg-color: #1b1e20;
-        --very-light-tint: rgba(255, 255, 255, 0.02);
+        --vlight-tint: rgba(255, 255, 255, 0.02);
         --light-tint: rgba(255, 255, 255, 0.05);
         --medium-tint: rgba(255, 255, 255, 0.1);
         --heavy-tint: rgba(255, 255, 255, 0.2);
