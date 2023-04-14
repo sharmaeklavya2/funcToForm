@@ -7,7 +7,7 @@ body {
     --vlink-color: #681da8;
     --text-secondary: #888;
     --text-danger: #dc3545;
-    --text-warning: #ffc107;
+    --text-warning: #ff9705;
     --text-success: #198754;
     --text-blue: #0d6efd;
 
@@ -17,6 +17,8 @@ body {
     --heavy-tint: rgba(0, 0, 0, 0.2);
     --vheavy-tint: rgba(0, 0, 0, 0.3);
     --danger-tint: rgba(255, 0, 0, 0.1);
+    --warning-tint: rgba(255, 150, 0, 0.1);
+    --success-tint: rgba(0, 255, 0, 0.1);
 }
 @media (prefers-color-scheme: dark) {
     body {
@@ -221,13 +223,17 @@ button:active {
 .f2f-log-line {
     white-space: pre-wrap;
 }
+.f2f-log-line.success {
+    background-color: var(--success-tint);
+    color: var(--text-success);
+}
 .f2f-log-line.danger {
     background-color: var(--danger-tint);
     color: var(--text-danger);
 }
 .f2f-log-line.warning {
-    background-color: var(--danger-tint);
-    color: var(--text-danger);
+    background-color: var(--warning-tint);
+    color: var(--text-warning);
 }
 .f2f-ostream > svg {
     margin: 1em;

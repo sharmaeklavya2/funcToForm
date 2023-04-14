@@ -15,6 +15,7 @@ function compose(...args) {
 var svgNS = 'http://www.w3.org/2000/svg';
 var debugInfo = {'input': null, 'output': null};
 var laneNameToType = {'log': 'div', 'break': 'div', 'svg': 'svg'};
+var contextClasses = ['success', 'danger', 'warning'];
 
 //=[ Converters and Validators ]================================================
 
@@ -338,14 +339,22 @@ class Ostream {
         }
     }
 
-    log(msg) {
+    rawLog(args, klasses=[]) {
         this.setLane('log');
         const logLineElem = document.createElement('div');
         logLineElem.classList.add('f2f-log-line');
-        const strArgs = Array.from(arguments).map(x => '' + x);
+        for(const klass of klasses) {
+            logLineElem.classList.add(klass);
+        }
+        const strArgs = args.map(x => '' + x);
         logLineElem.innerHTML = strArgs.join(' ');
         this.laneElem.appendChild(logLineElem);
     }
+
+    log(...args) {this.rawLog(args);}
+    danger(...args) {this.rawLog(args, ['danger']);}
+    warning(...args) {this.rawLog(args, ['warning']);}
+    success(...args) {this.rawLog(args, ['success']);}
 
     addBreak() {
         this.setLane('break');
