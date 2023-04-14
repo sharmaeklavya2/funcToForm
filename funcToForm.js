@@ -2,9 +2,13 @@
 
 'use strict';
 
-function compose(f, g) {
+function compose(...args) {
     return function(x) {
-        return f(g(x));
+        let y = x;
+        for(const f of args.reverse()) {
+            y = f(y);
+        }
+        return y;
     }
 }
 
@@ -59,7 +63,25 @@ function toFloat(s) {
 function assertGE(thresh) {
     return function(x) {
         if(x < thresh) {
-            throw new InputError(x + ' should be ≥ ' + thresh);
+            throw new InputError(x + ' is not ≥ ' + thresh);
+        }
+        return x;
+    }
+}
+
+function assertLE(thresh) {
+    return function(x) {
+        if(x > thresh) {
+            throw new InputError(x + ' is not ≤ ' + thresh);
+        }
+        return x;
+    }
+}
+
+function assertInRange(lo, hi) {
+    return function(x) {
+        if(x < lo || x > hi) {
+            throw new InputError(x + ` is not in range [${lo}, ${hi}]`);
         }
         return x;
     }
