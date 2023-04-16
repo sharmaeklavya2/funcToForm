@@ -16,6 +16,7 @@ const svgNS = 'http://www.w3.org/2000/svg';
 const debugInfo = {'input': null, 'output': null};
 const laneNameToType = {'log': 'div', 'break': 'div', 'svg': 'svg'};
 const contextClasses = ['success', 'danger', 'warning'];
+const f2fRegistry = [];
 let prevParamsString = window.location.search;
 
 //=[ Converters and Validators ]================================================
@@ -132,6 +133,11 @@ class TextWidget {
         }
     }
 
+    write(key, value) {
+        const elem = document.getElementById(key + '.input');
+        elem.value = value;
+    }
+
     create(idPrefix) {
         const inputElem = document.createElement('input');
         inputElem.setAttribute('id', idPrefix + '.input');
@@ -155,6 +161,11 @@ class CheckBoxWidget {
 
     read(key, value) {
         return Boolean(value);
+    }
+
+    write(key, value) {
+        const elem = document.getElementById(key + '.input');
+        elem.checked = Boolean(value);
     }
 
     create(idPrefix, name, description) {
@@ -209,6 +220,16 @@ class SelectWidget {
 
     read(key, value) {
         return this.nameToValue.get(value);
+    }
+
+    write(key, value) {
+        const elem = document.getElementById(key + '.input');
+        if(value) {
+            elem.value = value;
+        }
+        else {
+            elem.value = this.defName;
+        }
     }
 }
 
@@ -373,9 +394,12 @@ class Ostream {
 }
 
 function createForm(wrapperId, paramGroup, func, clearOutput=true) {
+    const formName = `f2f.${paramGroup.name}`;
+    const registryEntry = {'wrapperId': wrapperId, 'paramGroup': paramGroup,
+        'formName': formName, 'func': func, 'clearOutput': clearOutput};
+    f2fRegistry.push(registryEntry);
     const wrapperElem = document.getElementById(wrapperId);
     const formElem = document.createElement('form');
-    const formName = `f2f.${paramGroup.name}`;
     formElem.setAttribute('action', 'javascript:void(0);');
     formElem.setAttribute('id', `${formName}.form`);
     let path = [formName];
@@ -392,7 +416,9 @@ function createForm(wrapperId, paramGroup, func, clearOutput=true) {
     wrapperElem.appendChild(formElem);
     wrapperElem.appendChild(formErrorElem);
     const stdout = new Ostream('stdout', wrapperElem);
-    debugInfo['stdout'] = stdout;
+    registryEntry['stdout'] = stdout;
+    const qparams = new URLSearchParams(window.location.search);
+    fillForm(paramGroup, qparams);
     formElem.addEventListener('submit', function(ev) {
         const formData = new FormData(formElem);
         const [input, status] = readForm(paramGroup, formData);
@@ -449,6 +475,24 @@ function readFormItem(formData, output, param, path) {
     }
 }
 
+function readForm(paramGroup, formData) {
+    let path = [`f2f.${paramGroup.name}`];
+    let output = {};
+    let globalOk = true;
+    for(const param of paramGroup.paramList) {
+        const localOk = readFormItem(formData, output, param, path);
+        if(!localOk) {
+            globalOk = false;
+        }
+    }
+    if(globalOk) {
+        updateLocationWithFormData(formData, path[0] + '.');
+    }
+    return [output, globalOk];
+}
+
+//=[ URL Query Param Handling ]=================================================
+
 function updateLocationWithFormData(formData, prefixToChange) {
     let params = new URLSearchParams(window.location.search);
     const externalParams = new URLSearchParams();
@@ -474,18 +518,29 @@ function updateLocationWithFormData(formData, prefixToChange) {
     }
 }
 
-function readForm(paramGroup, formData) {
+/*
+function fillFormsWithUrlParams() {
+    const qparams = new URLSearchParams(window.location.search);
+    for(const entry of f2fRegistry) {
+        fillForm(entry.paramGroup, qparams);
+    }
+}
+*/
+
+function fillFormItem(qparams, param, path) {
+    if(param instanceof ParamGroup) {
+        throw new Error('fillFormItem: ParamGroup not implemented.')
+    }
+    else {
+        const key = path.join('.') + '.' + param.name;
+        const value = qparams.get(key);
+        param.widget.write(key, value)
+    }
+}
+
+function fillForm(paramGroup, qparams) {
     let path = [`f2f.${paramGroup.name}`];
-    let output = {};
-    let globalOk = true;
     for(const param of paramGroup.paramList) {
-        const localOk = readFormItem(formData, output, param, path);
-        if(!localOk) {
-            globalOk = false;
-        }
+        fillFormItem(qparams, param, path);
     }
-    if(globalOk) {
-        updateLocationWithFormData(formData, path[0]);
-    }
-    return [output, globalOk];
 }
