@@ -16,7 +16,7 @@ function mySort(input) {
         input.a.sort(function(a, b) {return a-b;});
     }
     else {
-        throw new Error('invalid sort criterion' + input.criterion);
+        throw new Error('invalid sort criterion ' + input.criterion);
     }
     if(input.reverse) {
         input.a.reverse();
