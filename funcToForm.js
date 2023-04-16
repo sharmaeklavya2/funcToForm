@@ -16,6 +16,7 @@ var svgNS = 'http://www.w3.org/2000/svg';
 var debugInfo = {'input': null, 'output': null};
 var laneNameToType = {'log': 'div', 'break': 'div', 'svg': 'svg'};
 var contextClasses = ['success', 'danger', 'warning'];
+var prevParamsString = window.location.search;
 
 //=[ Converters and Validators ]================================================
 
@@ -448,6 +449,31 @@ function readFormItem(formData, output, param, path) {
     }
 }
 
+function updateLocationWithFormData(formData, prefixToChange) {
+    let params = new URLSearchParams(window.location.search);
+    const externalParams = new URLSearchParams();
+    for(const [key, value] of params.entries()) {
+        if(!key.startsWith(prefixToChange)) {
+            externalParams.set(key, value);
+        }
+    }
+    params = externalParams;
+    for(const [key, value] of formData.entries()) {
+        if(value) {
+            params.set(key, value);
+        }
+    }
+    let paramsString = '?' + params.toString();
+    if(paramsString === '?') {
+        paramsString = '';
+    }
+    if(paramsString !== prevParamsString) {
+        console.debug(`changing url search params to '${paramsString}'`);
+        window.history.pushState({}, null, `${window.location.origin}${window.location.pathname}${paramsString}`);
+        prevParamsString = paramsString;
+    }
+}
+
 function readForm(paramGroup, formData) {
     let path = [`f2f.${paramGroup.name}`];
     let output = {};
@@ -457,6 +483,9 @@ function readForm(paramGroup, formData) {
         if(!localOk) {
             globalOk = false;
         }
+    }
+    if(globalOk) {
+        updateLocationWithFormData(formData, path[0]);
     }
     return [output, globalOk];
 }
