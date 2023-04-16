@@ -12,11 +12,11 @@ function compose(...args) {
     }
 }
 
-var svgNS = 'http://www.w3.org/2000/svg';
-var debugInfo = {'input': null, 'output': null};
-var laneNameToType = {'log': 'div', 'break': 'div', 'svg': 'svg'};
-var contextClasses = ['success', 'danger', 'warning'];
-var prevParamsString = window.location.search;
+const svgNS = 'http://www.w3.org/2000/svg';
+const debugInfo = {'input': null, 'output': null};
+const laneNameToType = {'log': 'div', 'break': 'div', 'svg': 'svg'};
+const contextClasses = ['success', 'danger', 'warning'];
+let prevParamsString = window.location.search;
 
 //=[ Converters and Validators ]================================================
 
