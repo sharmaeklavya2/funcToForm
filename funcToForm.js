@@ -518,14 +518,13 @@ function updateLocationWithFormData(formData, prefixToChange) {
     }
 }
 
-/*
 function fillFormsWithUrlParams() {
+    console.debug('filling forms with QParams');
     const qparams = new URLSearchParams(window.location.search);
     for(const entry of f2fRegistry) {
         fillForm(entry.paramGroup, qparams);
     }
 }
-*/
 
 function fillFormItem(qparams, param, path) {
     if(param instanceof ParamGroup) {
@@ -544,3 +543,8 @@ function fillForm(paramGroup, qparams) {
         fillFormItem(qparams, param, path);
     }
 }
+
+//=[ Global Event Listeners ]===================================================
+
+window.addEventListener('popstate', fillFormsWithUrlParams);
+window.addEventListener('pushstate', fillFormsWithUrlParams);
