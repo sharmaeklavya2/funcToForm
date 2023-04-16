@@ -5,7 +5,7 @@
 function compose(...args) {
     return function(x) {
         let y = x;
-        for(const f of args.reverse()) {
+        for(const f of args.toReversed()) {
             y = f(y);
         }
         return y;
