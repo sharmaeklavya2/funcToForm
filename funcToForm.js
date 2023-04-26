@@ -40,7 +40,10 @@ function toInt(s) {
 
 function toFloatSingle(s) {
     s = s.trim();
-    if(isNaN(s)) {
+    if(s === '') {
+        throw new InputError('empty input');
+    }
+    else if(isNaN(s)) {
         throw new InputError(s + ' is not a number');
     }
     else {
