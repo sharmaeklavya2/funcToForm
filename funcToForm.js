@@ -93,6 +93,21 @@ function assertInRange(lo, hi) {
     }
 }
 
+function matrixConv(outSep, inSep, converter=null) {
+    return function(s) {
+        const rows = listConv(outSep, listConv(inSep, converter))(s);
+        if(rows.length > 1) {
+            const m = rows[0].length;
+            for(let i=1; i<rows.length; ++i) {
+                if(rows[i].length !== m) {
+                    throw new InputError(`row ${i} has length ${rows[i].length} but row 0 has length ${m}`);
+                }
+            }
+        }
+        return rows;
+    }
+}
+
 function listConv(sep, converter=null) {
     return function(s) {
         let parts = s.split(sep);
