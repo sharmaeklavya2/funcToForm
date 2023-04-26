@@ -142,11 +142,20 @@ class TextWidget {
     }
 
     create(idPrefix) {
-        const inputElem = document.createElement('input');
+        let inputElem = null;
+        if(this.type === 'textarea') {
+            inputElem = document.createElement('textarea');
+            inputElem.setAttribute('rows', '5');
+        }
+        else {
+            inputElem = document.createElement('input');
+        }
         inputElem.setAttribute('id', idPrefix + '.input');
         inputElem.setAttribute('type', this.type);
         inputElem.setAttribute('name', idPrefix);
         inputElem.setAttribute('autocomplete', 'off');
+        inputElem.setAttribute('autocapitalize', 'none');
+        inputElem.setAttribute('spellcheck', 'false');
         if(this.required) {
             inputElem.setAttribute('required', 'required');
         }

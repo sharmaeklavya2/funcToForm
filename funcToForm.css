@@ -125,7 +125,7 @@ form {
     white-space: pre-wrap;
     border-radius: 0.25em;
 }
-.inputIwrap > input:not([type="checkbox"]), .inputIwrap > select {
+.inputIwrap > input:not([type="checkbox"]), .inputIwrap > select, .inputIwrap > textarea {
     margin-left: 1em;
 }
 .inputIwrap > input:not([type="checkbox"]), .inputIwrap > textarea {
@@ -135,20 +135,20 @@ form {
     margin-right: 1em;
     align-self: stretch;
 }
-input[type="text"], select {
+input[type="text"], select, textarea {
     border: none;
     border-radius: 0.25em;
     font-size: 1em;
     font-family: monospace;
     color: var(--text-color);
 }
-input::placeholder {
+input::placeholder, textarea::placeholder {
     color: var(--text-secondary);
 }
 input, select, textarea {
     background-color: var(--bg-color);
 }
-input[type="text"] {
+input[type="text"], textarea {
     padding: 0.35em 0.7em;
 }
 select {
