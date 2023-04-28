@@ -438,11 +438,7 @@ function createForm(wrapperId, paramGroup, func, clearOutput=true) {
     submitButton.setAttribute('type', 'submit');
     submitButton.innerHTML = 'Run';
     formElem.appendChild(submitButton);
-    const formErrorElem = document.createElement('div');
-    formErrorElem.classList.add('f2f-error');
-    formErrorElem.setAttribute('id', `${formName}.error`);
     wrapperElem.appendChild(formElem);
-    wrapperElem.appendChild(formErrorElem);
     const stdout = new Ostream('stdout', wrapperElem);
     registryEntry['stdout'] = stdout;
     const qparams = new URLSearchParams(window.location.search);
@@ -463,7 +459,7 @@ function createForm(wrapperId, paramGroup, func, clearOutput=true) {
                 }
             }
             catch (error) {
-                formErrorElem.innerHTML = error.toString();
+                stdout.error(error.toString());
                 throw error;
             }
             finally {
@@ -489,10 +485,10 @@ function readFormItem(formData, output, param, path) {
             return true;
         }
         catch (error) {
-            if(error instanceof InputError && errorsElem) {
+            if(error instanceof Error && errorsElem) {
                 const errorElem = document.createElement('div');
                 errorElem.classList.add('f2f-error');
-                errorElem.innerHTML = error.message;
+                errorElem.innerHTML = (error instanceof InputError ? '' : error.name + ': ') + error.message;
                 errorsElem.appendChild(errorElem);
                 return false;
             }
