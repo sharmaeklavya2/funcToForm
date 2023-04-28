@@ -15,7 +15,6 @@ function compose(...args) {
 const svgNS = 'http://www.w3.org/2000/svg';
 const debugInfo = {'input': null, 'output': null};
 const laneNameToType = {'log': 'div', 'break': 'div', 'svg': 'svg'};
-const contextClasses = ['success', 'danger', 'warning'];
 const f2fRegistry = [];
 let prevParamsString = window.location.search;
 
@@ -401,8 +400,10 @@ class Ostream {
     }
 
     log(...args) {this.rawLog(args);}
-    danger(...args) {this.rawLog(args, ['danger']);}
-    warning(...args) {this.rawLog(args, ['warning']);}
+    info(...args) {this.rawLog(args, ['info']);}
+    error(...args) {this.rawLog(args, ['error']);}
+    warn(...args) {this.rawLog(args, ['warn']);}
+    debug(...args) {this.rawLog(args, ['debug']);}
     success(...args) {this.rawLog(args, ['success']);}
 
     addBreak() {

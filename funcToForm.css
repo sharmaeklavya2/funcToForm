@@ -227,13 +227,16 @@ button:active {
     background-color: var(--success-tint);
     color: var(--text-success);
 }
-.f2f-log-line.danger {
+.f2f-log-line.danger, .f2f-log-line.error {
     background-color: var(--danger-tint);
     color: var(--text-danger);
 }
-.f2f-log-line.warning {
+.f2f-log-line.warning, .f2f-log-line.warn {
     background-color: var(--warning-tint);
     color: var(--text-warning);
+}
+.f2f-log-line.secondary, .f2f-log-line.debug {
+    color: var(--text-secondary);
 }
 .f2f-ostream > svg {
     margin: 1em;
