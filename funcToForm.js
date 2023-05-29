@@ -428,7 +428,6 @@ function createForm(wrapperId, paramGroup, func, clearOutput=true) {
     f2fRegistry.push(registryEntry);
     const wrapperElem = document.getElementById(wrapperId);
     const formElem = document.createElement('form');
-    formElem.setAttribute('action', 'javascript:void(0);');
     formElem.setAttribute('id', `${formName}.form`);
     let path = [formName];
     for(const param of paramGroup.paramList) {
@@ -444,6 +443,7 @@ function createForm(wrapperId, paramGroup, func, clearOutput=true) {
     const qparams = new URLSearchParams(window.location.search);
     fillForm(paramGroup, qparams);
     formElem.addEventListener('submit', function(ev) {
+        ev.preventDefault();
         const formData = new FormData(formElem);
         const [input, status] = readForm(paramGroup, formData);
         debugInfo.input = input;
