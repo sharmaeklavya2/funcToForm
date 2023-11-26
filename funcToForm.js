@@ -14,7 +14,7 @@ function compose(...args) {
 
 const svgNS = 'http://www.w3.org/2000/svg';
 const debugInfo = {'input': null, 'output': null};
-const laneNameToType = {'log': 'div', 'break': 'div', 'svg': 'svg'};
+const laneNameToType = {'log': 'div', 'break': 'div', 'misc': 'div', 'svg': 'svg'};
 const f2fRegistry = [];
 let prevParamsString = window.location.search;
 
@@ -361,6 +361,12 @@ class Ostream {
         this.laneElem = null;
     }
 
+    clear() {
+        this.laneName = null;
+        this.laneElem = null;
+        this.streamElem.innerHTML = '';
+    }
+
     setLane(name, attrs=null) {
         if(name === this.laneName) {
             return;
@@ -387,6 +393,14 @@ class Ostream {
         }
     }
 
+    addBreak() {
+        this.setLane('break');
+    }
+
+    rawAdd(elem) {
+        this.laneElem.appendChild(elem);
+    }
+
     rawLog(args, klasses=[]) {
         this.setLane('log');
         const logLineElem = document.createElement('div');
@@ -405,20 +419,6 @@ class Ostream {
     warn(...args) {this.rawLog(args, ['warn']);}
     debug(...args) {this.rawLog(args, ['debug']);}
     success(...args) {this.rawLog(args, ['success']);}
-
-    addBreak() {
-        this.setLane('break');
-    }
-
-    rawAdd(elem) {
-        this.laneElem.appendChild(elem);
-    }
-
-    clear() {
-        this.laneName = null;
-        this.laneElem = null;
-        this.streamElem.innerHTML = '';
-    }
 }
 
 function createForm(wrapperId, paramGroup, func, clearOutput=true) {
