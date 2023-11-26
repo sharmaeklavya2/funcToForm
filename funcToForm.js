@@ -14,7 +14,8 @@ function compose(...args) {
 
 const svgNS = 'http://www.w3.org/2000/svg';
 const debugInfo = {'input': null, 'output': null};
-const laneNameToType = {'log': 'div', 'break': 'div', 'misc': 'div', 'svg': 'svg'};
+const laneNameToType = {'log': 'div', 'break': 'div', 'misc': 'div',
+    'svg': 'svg', 'table': 'table'};
 const f2fRegistry = [];
 let prevParamsString = window.location.search;
 
@@ -419,6 +420,23 @@ class Ostream {
     warn(...args) {this.rawLog(args, ['warn']);}
     debug(...args) {this.rawLog(args, ['debug']);}
     success(...args) {this.rawLog(args, ['success']);}
+
+    tableRow(row, head=false) {
+        this.setLane('table');
+        if(row instanceof Element) {
+            this.laneElem.appendChild(row);
+        }
+        else {
+            const rowElem = document.createElement('tr');
+            const cellName = head ? 'th' : 'td';
+            for(const x of row) {
+                const cellElem = document.createElement(cellName);
+                cellElem.innerText = x;
+                rowElem.appendChild(cellElem);
+            }
+            this.laneElem.appendChild(rowElem);
+        }
+    }
 }
 
 function createForm(wrapperId, paramGroup, func, clearOutput=true) {
