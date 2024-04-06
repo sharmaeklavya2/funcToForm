@@ -239,7 +239,7 @@ class SelectWidget {
             if(option.name === this.defName) {
                 optionElem.setAttribute('selected', 'selected');
             }
-            optionElem.innerHTML = option.text;
+            optionElem.innerText = option.text;
             inputElem.appendChild(optionElem);
         }
         return inputElem;
@@ -311,7 +311,7 @@ function createFormItem(outerElem, param, path) {
         owrapperElem.appendChild(iwrapperElem);
         const labelElem = document.createElement('label');
         labelElem.setAttribute('for', idPrefix + '.input');
-        labelElem.innerHTML = param.label;
+        labelElem.innerText = param.label;
         let helpBtn = null;
         if(param.description) {
             helpBtn = document.createElement('div');
@@ -336,7 +336,7 @@ function createFormItem(outerElem, param, path) {
             const helpElem = document.createElement('div');
             helpElem.classList.add('f2f-help-str');
             helpElem.classList.add('hidden');
-            helpElem.innerHTML = param.description;
+            helpElem.innerText = param.description;
             owrapperElem.appendChild(helpElem);
             helpBtn.addEventListener('click', function(ev) {
                 helpElem.classList.toggle('hidden');
@@ -365,7 +365,7 @@ class Ostream {
     clear() {
         this.laneName = null;
         this.laneElem = null;
-        this.streamElem.innerHTML = '';
+        this.streamElem.innerText = '';
     }
 
     setLane(name, attrs=null) {
@@ -410,7 +410,7 @@ class Ostream {
             logLineElem.classList.add(klass);
         }
         const strArgs = args.map(x => '' + x);
-        logLineElem.innerHTML = strArgs.join(' ');
+        logLineElem.innerText = strArgs.join(' ');
         this.laneElem.appendChild(logLineElem);
     }
 
@@ -453,7 +453,7 @@ function createForm(wrapperId, paramGroup, func, clearOutput=true) {
     }
     const submitButton = document.createElement('button');
     submitButton.setAttribute('type', 'submit');
-    submitButton.innerHTML = 'Run';
+    submitButton.innerText = 'Run';
     formElem.appendChild(submitButton);
     wrapperElem.appendChild(formElem);
     const stdout = new Ostream('stdout', wrapperElem);
@@ -496,7 +496,7 @@ function readFormItem(formData, output, param, path) {
         const value = formData.get(key);
         const errorsElem = document.getElementById(key + '.errors');
         if(errorsElem) {
-            errorsElem.innerHTML = '';
+            errorsElem.innerText = '';
         }
         try {
             output[param.name] = param.widget.read(key, value);
@@ -506,7 +506,7 @@ function readFormItem(formData, output, param, path) {
             if(error instanceof Error && errorsElem) {
                 const errorElem = document.createElement('div');
                 errorElem.classList.add('f2f-error');
-                errorElem.innerHTML = (error instanceof InputError ? '' : error.name + ': ') + error.message;
+                errorElem.innerText = (error instanceof InputError ? '' : error.name + ': ') + error.message;
                 errorsElem.appendChild(errorElem);
                 return false;
             }
