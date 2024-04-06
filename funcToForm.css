@@ -235,7 +235,7 @@ button:active {
 }
 .f2f-log-line {
     white-space: pre-wrap;
-    height: 1.4em;
+    min-height: 1.4em;
 }
 .f2f-log-line.success {
     background-color: var(--success-tint);
