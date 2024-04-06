@@ -278,7 +278,7 @@ class Param {
 }
 
 class ParamGroup {
-    constructor(name, paramList, converter=null, label=null, description=null) {
+    constructor(name, paramList, converter=null, label=null, description=null, compact=false) {
         this.name = name;
         if(!isValidParamName(name)) {
             throw new Error('Invalid parameter name ' + name);
@@ -287,6 +287,7 @@ class ParamGroup {
         this.label = (label === null ? name : label);
         this.description = description;
         this.converter = converter;
+        this.compact = compact;
         let seenNames = new Set();
         for(const param of paramList) {
             if(seenNames.has(param.name)) {
@@ -306,6 +307,9 @@ function createFormItem(outerElem, param, path) {
         const fieldSetElem = document.createElement('fieldset');
         fieldSetElem.setAttribute('id', idPrefix + '.fieldset');
         fieldSetElem.classList.add('inputOwrap');
+        if(param.compact) {
+            fieldSetElem.classList.add('compact');
+        }
         const labelElem = document.createElement('legend');
         labelElem.innerText = param.label;
         fieldSetElem.appendChild(labelElem);

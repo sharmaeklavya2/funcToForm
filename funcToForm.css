@@ -113,12 +113,16 @@ fieldset {
 fieldset > legend {
     padding: 0.1em 0.3em;
 }
-.inputIwrap {
+.inputIwrap, .inputOwrap.compact {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: row;
     align-items: baseline;
     align-self: stretch;
+    flex-wrap: wrap;
     margin: 0.2em 0;
+}
+.inputOwrap.compact > .inputOwrap {
+    margin-right: 1.5em;
 }
 .f2f-errors {
     display: flex;
