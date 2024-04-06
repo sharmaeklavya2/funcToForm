@@ -278,12 +278,13 @@ class Param {
 }
 
 class ParamGroup {
-    constructor(name, paramList, converter=null, description=null) {
+    constructor(name, paramList, converter=null, label=null, description=null) {
         this.name = name;
         if(!isValidParamName(name)) {
             throw new Error('Invalid parameter name ' + name);
         }
         this.paramList = paramList;
+        this.label = (label === null ? name : label);
         this.description = description;
         this.converter = converter;
         let seenNames = new Set();
@@ -297,14 +298,31 @@ class ParamGroup {
 }
 
 function createFormItem(outerElem, param, path) {
+    const idPrefix = path.join('.') + '.' + param.name;
+    const owrapperElem = document.createElement('div');
+    owrapperElem.setAttribute('id', idPrefix + '.owrap');
+    owrapperElem.classList.add('inputOwrap');
     if(param instanceof ParamGroup) {
-        throw new Error('createFormItem: ParamGroup not implemented.')
+        const fieldSetElem = document.createElement('fieldset');
+        fieldSetElem.setAttribute('id', idPrefix + '.fieldset');
+        fieldSetElem.classList.add('inputOwrap');
+        const labelElem = document.createElement('legend');
+        labelElem.innerText = param.label;
+        fieldSetElem.appendChild(labelElem);
+        if(param.description) {
+            const descrElem = document.createElement('p');
+            descrElem.innerText = param.description;
+            fieldSetElem.appendChild(descrElem);
+        }
+        path.push(param.name);
+        for(const childParam of param.paramList) {
+            createFormItem(fieldSetElem, childParam, path);
+        }
+        path.pop();
+        owrapperElem.appendChild(fieldSetElem);
     }
     else {
         const idPrefix = path.join('.') + '.' + param.name;
-        const owrapperElem = document.createElement('div');
-        owrapperElem.setAttribute('id', idPrefix + '.owrap');
-        owrapperElem.classList.add('inputOwrap');
         const iwrapperElem = document.createElement('div');
         iwrapperElem.classList.add('inputIwrap');
         iwrapperElem.setAttribute('id', idPrefix + '.iwrap');
@@ -342,12 +360,12 @@ function createFormItem(outerElem, param, path) {
                 helpElem.classList.toggle('hidden');
             });
         }
-        const errorsElem = document.createElement('div');
-        errorsElem.setAttribute('id', idPrefix + '.errors');
-        errorsElem.classList.add('f2f-errors');
-        owrapperElem.appendChild(errorsElem);
-        outerElem.appendChild(owrapperElem);
     }
+    const errorsElem = document.createElement('div');
+    errorsElem.setAttribute('id', idPrefix + '.errors');
+    errorsElem.classList.add('f2f-errors');
+    owrapperElem.appendChild(errorsElem);
+    outerElem.appendChild(owrapperElem);
 }
 
 class Ostream {
@@ -487,27 +505,51 @@ function createForm(wrapperId, paramGroup, func, clearOutput=true) {
     });
 }
 
+function handleReadError(error, errorsElem) {
+    const errorElem = document.createElement('div');
+    errorElem.classList.add('f2f-error');
+    errorElem.innerText = (error instanceof InputError ? '' : error.name + ': ') + error.message;
+    errorsElem.appendChild(errorElem);
+}
+
 function readFormItem(formData, output, param, path) {
+    const key = path.join('.') + '.' + param.name;
+    const errorsElem = document.getElementById(key + '.errors');
+    if(errorsElem) {
+        errorsElem.innerText = '';
+    }
     if(param instanceof ParamGroup) {
-        throw new Error('readFormItem: ParamGroup not implemented.')
+        let output2 = {};
+        let globalOk = true;
+        path.push(param.name);
+        for(const childParam of param.paramList) {
+            const localOk = readFormItem(formData, output2, childParam, path);
+            if(!localOk) {
+                globalOk = false;
+            }
+        }
+        path.pop();
+        if(param.converter) {
+            try {
+                output2 = param.converter(output2);
+            }
+            catch(error) {
+                handleReadError(error, errorsElem);
+                return false;
+            }
+        }
+        output[param.name] = output2;
+        return globalOk;
     }
     else {
-        const key = path.join('.') + '.' + param.name;
         const value = formData.get(key);
-        const errorsElem = document.getElementById(key + '.errors');
-        if(errorsElem) {
-            errorsElem.innerText = '';
-        }
         try {
             output[param.name] = param.widget.read(key, value);
             return true;
         }
         catch (error) {
             if(error instanceof Error && errorsElem) {
-                const errorElem = document.createElement('div');
-                errorElem.classList.add('f2f-error');
-                errorElem.innerText = (error instanceof InputError ? '' : error.name + ': ') + error.message;
-                errorsElem.appendChild(errorElem);
+                handleReadError(error, errorsElem);
                 return false;
             }
             else {
@@ -570,7 +612,11 @@ function fillFormsWithUrlParams() {
 
 function fillFormItem(qparams, param, path) {
     if(param instanceof ParamGroup) {
-        throw new Error('fillFormItem: ParamGroup not implemented.')
+        path.push(param.name);
+        for(const childParam of param.paramList) {
+            fillFormItem(qparams, childParam, path);
+        }
+        path.pop();
     }
     else {
         const key = path.join('.') + '.' + param.name;

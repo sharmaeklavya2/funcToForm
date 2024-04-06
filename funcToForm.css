@@ -95,6 +95,7 @@ form, .inputOwrap {
     display: flex;
     flex-direction: column;
     align-items: start;
+    align-self: stretch;
     font-family: monospace;
 }
 form {
@@ -103,6 +104,14 @@ form {
     align-items: stretch;
     border-radius: 0.5em;
     margin-bottom: 1em;
+}
+fieldset {
+    margin: 0.2em 0;
+    border: 1px solid var(--heavy-tint);
+    border-radius: 0.25em;
+}
+fieldset > legend {
+    padding: 0.1em 0.3em;
 }
 .inputIwrap {
     display: flex;
@@ -222,6 +231,7 @@ button:active {
 }
 .f2f-log-line {
     white-space: pre-wrap;
+    height: 1.4em;
 }
 .f2f-log-line.success {
     background-color: var(--success-tint);
