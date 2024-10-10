@@ -6,9 +6,9 @@
 <meta name="color-scheme" content="dark light" />
 <title>Greedy Scheduling</title>
 <link rel="stylesheet" href="../funcToForm.css" />
-<script type="text/javascript" src="../funcToForm.js"></script>
-<script>
-'use strict';
+<script type="module" src="../v2.js"></script>
+<script type="module">
+import * as f2f from "../v2.js";
 function greedySched(a, m, sort) {
     const n = a.length;
     // get sequence of indices of jobs corresponding to iteration order
@@ -71,11 +71,11 @@ function greedyWrapper(input, stdout) {
     stdout.log('bundles:', JSON.stringify(bundles));
     stdout.log('sizes of jobs in each bundle:', JSON.stringify(loadBundles));
 
-    if(stdout instanceof Ostream) {
+    if(stdout instanceof f2f.Ostream) {
         const stroke=2, prec=5, totHeight=200, totWidth=240, margin = totWidth / (5*m - 1);
         stdout.setLane('svg', {'width': totWidth + stroke * 2, 'height': totHeight + stroke * 2,
             'viewBox': `${-stroke} ${-stroke} ${totWidth + stroke * 2} ${totHeight + stroke * 2}`});
-        const styleElem = document.createElementNS(svgNS, 'style');
+        const styleElem = document.createElementNS(f2f.svgNS, 'style');
         styleElem.innerHTML = `rect {stroke: var(--text-secondary); stroke-width: ${stroke}px; fill: var(--light-tint);}`;
         stdout.rawAdd(styleElem);
         for(let i=0; i<m; ++i) {
@@ -83,7 +83,7 @@ function greedyWrapper(input, stdout) {
             for(const j of bundles[i]) {
                 const height = totHeight * (a[j] / maxLoad);
                 cumHeight += height;
-                const rectElem = document.createElementNS(svgNS, 'rect');
+                const rectElem = document.createElementNS(f2f.svgNS, 'rect');
                 rectElem.setAttribute('x', (margin * 5 * i).toFixed(prec));
                 rectElem.setAttribute('y', (totHeight - cumHeight).toFixed(prec));
                 rectElem.setAttribute('width', (margin * 4).toFixed(prec));
@@ -94,14 +94,15 @@ function greedyWrapper(input, stdout) {
     }
 }
 window.addEventListener('DOMContentLoaded', function() {
-    const paramGroup = new ParamGroup('myForm', [
-        new Param('a', new TextWidget(listConv(',', toFloat)),
-            'job sizes', 'Running times of jobs as a comma-separated list of numbers'),
-        new Param('m', new TextWidget(compose(assertGE(1), toInt)), null,
-            'Number of machines'),
-        new Param('sort', new CheckBoxWidget(true), null, 'Sort the jobs in descending order?'),
+    const paramGroup = new f2f.ParamGroup(undefined, [
+        new f2f.Param('a', new f2f.TextWidget({converter: f2f.listConv(',', f2f.toFloat)}),
+            {'label': 'job sizes', 'description': 'Running times of jobs as a comma-separated list of numbers'}),
+        new f2f.Param('m', new f2f.TextWidget({converter: f2f.compose(f2f.assertGE(1), f2f.toInt)}),
+            {'description': 'Number of machines'}),
+        new f2f.Param('sort', new f2f.CheckBoxWidget({'defVal': true}),
+            {'description': 'Sort the jobs in descending order?'}),
     ]);
-    createForm('myApp', paramGroup, greedyWrapper);
+    f2f.createForm('myApp', paramGroup, greedyWrapper);
 });
 </script>
 </head>
