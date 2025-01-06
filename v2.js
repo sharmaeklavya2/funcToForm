@@ -308,6 +308,19 @@ export class ParamGroup {
     }
 }
 
+function addHelpElem(outer, helpBtn, helpText) {
+    const helpElem = document.createElement('div');
+    helpElem.classList.add('f2f-help-str');
+    helpElem.classList.add('hidden');
+    helpElem.innerText = helpText;
+    outer.appendChild(helpElem);
+    if(helpBtn !== undefined) {
+        helpBtn.addEventListener('click', function(ev) {
+            helpElem.classList.toggle('hidden');
+        });
+    }
+}
+
 function createFormItem(outerElem, param, path) {
     if(param.name === undefined) {
         throw new Error("missing param.name");
@@ -324,12 +337,19 @@ function createFormItem(outerElem, param, path) {
             fieldSetElem.classList.add('compact');
         }
         const labelElem = document.createElement('legend');
-        labelElem.innerText = param.label;
         fieldSetElem.appendChild(labelElem);
         if(param.description) {
-            const descrElem = document.createElement('p');
-            descrElem.innerText = param.description;
-            fieldSetElem.appendChild(descrElem);
+            const labelText = document.createElement('span');
+            labelText.innerText = param.label;
+            labelElem.appendChild(labelText);
+            const helpBtn = document.createElement('span');
+            helpBtn.classList.add('f2f-help-btn');
+            helpBtn.classList.add('inline');
+            labelElem.appendChild(helpBtn);
+            addHelpElem(fieldSetElem, helpBtn, param.description);
+        }
+        else {
+            labelElem.innerText = param.label;
         }
         path.push(param.name);
         for(const childParam of param.paramList) {
@@ -367,14 +387,7 @@ function createFormItem(outerElem, param, path) {
             iwrapperElem.appendChild(inputElem);
         }
         if(param.description) {
-            const helpElem = document.createElement('div');
-            helpElem.classList.add('f2f-help-str');
-            helpElem.classList.add('hidden');
-            helpElem.innerText = param.description;
-            owrapperElem.appendChild(helpElem);
-            helpBtn.addEventListener('click', function(ev) {
-                helpElem.classList.toggle('hidden');
-            });
+            addHelpElem(owrapperElem, helpBtn, param.description);
         }
     }
     const errorsElem = document.createElement('div');

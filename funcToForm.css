@@ -201,6 +201,9 @@ button:active {
     height: 15px;
     cursor: pointer;
 }
+.f2f-help-btn.inline {
+    display: inline-flex;
+}
 .f2f-help-btn:hover {
     background-color: var(--medium-tint);
 }
@@ -212,9 +215,7 @@ button:active {
 }
 .f2f-help-str {
     padding: 0.2em 0.3em;
-    margin-left: 1em;
     border-radius: 0.25em;
-    background-color: var(--vlight-tint);
     color: var(--text-secondary);
     white-space: pre-wrap;
 }
