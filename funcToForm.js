@@ -1,4 +1,6 @@
 // Copyright (C) 2023 Eklavya Sharma. Licensed under GNU GPLv3.
+// This file is deprecated, and exists only to support backwards-compatibility.
+// Please use v2.js instead.
 
 'use strict';
 
