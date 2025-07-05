@@ -160,6 +160,10 @@ export class TextWidget {
         elem.value = value;
     }
 
+    transformQParam(key, value) {
+        return value;
+    }
+
     create(idPrefix) {
         let inputElem;
         if(this.type === 'textarea') {
@@ -191,12 +195,25 @@ export class CheckBoxWidget {
     }
 
     read(key, value) {
+        // `value` is obtained using `new FormData(formElem)`.
         return Boolean(value);
     }
 
     write(key, value) {
+        // `value` is obtained from URL querystring
         const elem = document.getElementById(key + '.input');
-        elem.checked = Boolean(value);
+        elem.checked = (value === null) ? this.defVal : (value === 'on');
+    }
+
+    transformQParam(key, value) {
+        // `value` is obtained using `new FormData(formElem)`.
+        const x = Boolean(value);
+        if(x != this.defVal) {
+            return x ? 'on' : 'off';
+        }
+        else {
+            return null;
+        }
     }
 
     create(idPrefix) {
@@ -263,6 +280,10 @@ export class SelectWidget {
         else {
             elem.value = this.defName;
         }
+    }
+
+    transformQParam(key, value) {
+        return value;
     }
 }
 
@@ -546,7 +567,7 @@ function handleReadError(error, errorsElem) {
     errorsElem.appendChild(errorElem);
 }
 
-function readFormItem(formData, output, param, path) {
+function readFormItem(formData, output, outQParams, param, path) {
     if(param.name === undefined) {
         throw new Error("missing param.name");
     }
@@ -560,7 +581,7 @@ function readFormItem(formData, output, param, path) {
         let globalOk = true;
         path.push(param.name);
         for(const childParam of param.paramList) {
-            const localOk = readFormItem(formData, output2, childParam, path);
+            const localOk = readFormItem(formData, output2, outQParams, childParam, path);
             if(!localOk) {
                 globalOk = false;
             }
@@ -581,6 +602,10 @@ function readFormItem(formData, output, param, path) {
     else {
         const value = formData.get(key);
         try {
+            const qvalue = param.widget.transformQParam(key, value);
+            if(qvalue !== undefined && qvalue !== null) {
+                outQParams.set(key, qvalue);
+            }
             output[param.name] = param.widget.read(key, value);
             return true;
         }
@@ -597,24 +622,27 @@ function readFormItem(formData, output, param, path) {
 }
 
 function readForm(paramGroup, formData) {
+    // Assuming `formData` was generated using something like `new FormData(formElem)`,
+    // converts `formData` to a dict and updates the browser's address bar.
     let path = paramGroup.name === undefined ? [] : [paramGroup.name];
     let output = {};
     let globalOk = true;
+    const outQParams = new URLSearchParams();
     for(const param of paramGroup.paramList) {
-        const localOk = readFormItem(formData, output, param, path);
+        const localOk = readFormItem(formData, output, outQParams, param, path);
         if(!localOk) {
             globalOk = false;
         }
     }
     if(globalOk) {
-        updateLocationWithFormData(formData, paramGroup.name);
+        updateLocationWithFormData(outQParams, paramGroup.name);
     }
     return [output, globalOk];
 }
 
 //=[ URL Query Param Handling ]=================================================
 
-function updateLocationWithFormData(formData, formName) {
+function updateLocationWithFormData(formQParams, formName) {
     let params = new URLSearchParams(window.location.search);
     const externalParams = new URLSearchParams();
     for(const [key, value] of params.entries()) {
@@ -623,7 +651,7 @@ function updateLocationWithFormData(formData, formName) {
         }
     }
     params = externalParams;
-    for(const [key, value] of formData.entries()) {
+    for(const [key, value] of formQParams.entries()) {
         if(value) {
             params.set(key, value);
         }
@@ -663,6 +691,7 @@ function fillFormItem(qparams, param, path) {
 }
 
 function fillForm(paramGroup, qparams) {
+    // fills the form's HTML elements with data from a URLSearchParams object
     let path = paramGroup.name === undefined ? []: [paramGroup.name];
     for(const param of paramGroup.paramList) {
         fillFormItem(qparams, param, path);
