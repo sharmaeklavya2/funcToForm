@@ -86,8 +86,14 @@ div.math, .katex-display {
 .danger {
     color: var(--text-danger);
 }
+.warning {
+    color: var(--text-warning);
+}
 .success {
     color: var(--text-success);
+}
+.secondary {
+    color: var(--text-secondary);
 }
 
 /* form */
