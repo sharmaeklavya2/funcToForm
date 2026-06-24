@@ -1,4 +1,4 @@
-// Copyright (C) 2024 Eklavya Sharma. Licensed under GNU GPLv3.
+// Copyright (C) 2026 Eklavya Sharma. Licensed under MIT (https://opensource.org/license/mit).
 
 export function compose(...args) {
     return function(x) {
